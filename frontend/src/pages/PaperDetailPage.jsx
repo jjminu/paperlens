@@ -45,17 +45,14 @@ export default function PaperDetailPage() {
                 .filter(Boolean)
                 .join(" · ")}
             </div>
-            <details style={{ marginTop: 14 }}>
-              <summary style={{ cursor: "pointer", fontWeight: 600 }}>
-                원문 초록 보기
-              </summary>
-              <div className="abstract-box" style={{ marginTop: 10 }}>
-                {paper.abstract}
-              </div>
-            </details>
           </div>
 
-          <SummaryCard title="AI 요약" summary={paper.summary} />
+          <SummaryCard
+            title="AI 요약"
+            summary={paper.summary}
+            abstract={paper.abstract}
+            entities={paper.entities}
+          />
         </>
       )}
     </>

@@ -19,6 +19,7 @@ import models
 from config import settings
 from database import get_db, init_db
 from schemas import (
+    Entity,
     PaperDetail,
     PaperListItem,
     PubMedArticle,
@@ -27,6 +28,7 @@ from schemas import (
     Summary,
 )
 from services.ai_service import AIServiceError, summarize_abstract
+from services.ner_service import extract_entities
 from services.pubmed_service import PubMedError, PubMedNotFound, fetch_pubmed_article
 
 app = FastAPI(
@@ -57,6 +59,7 @@ def _save_paper(
     title: str,
     abstract: str,
     summary: Summary,
+    entities: list[Entity] | None = None,
     pmid: str | None = None,
     authors: list[str] | None = None,
     journal: str | None = None,
@@ -70,6 +73,7 @@ def _save_paper(
         pub_year=pub_year,
         abstract=abstract,
         summary_json=summary.model_dump_json(),
+        entities_json=json.dumps([e.model_dump() for e in (entities or [])]),
     )
     db.add(paper)
     db.commit()
@@ -78,6 +82,12 @@ def _save_paper(
 
 
 def _paper_to_detail(paper: models.Paper) -> PaperDetail:
+    entities = []
+    if paper.entities_json:
+        try:
+            entities = [Entity(**e) for e in json.loads(paper.entities_json)]
+        except Exception:
+            entities = []
     return PaperDetail(
         id=paper.id,
         title=paper.title,
@@ -87,6 +97,7 @@ def _paper_to_detail(paper: models.Paper) -> PaperDetail:
         pub_year=paper.pub_year,
         abstract=paper.abstract,
         summary=Summary(**json.loads(paper.summary_json)),
+        entities=entities,
         created_at=paper.created_at,
     )
 
@@ -94,7 +105,11 @@ def _paper_to_detail(paper: models.Paper) -> PaperDetail:
 # ── 헬스 체크 ──
 @app.get("/health")
 def health():
-    return {"status": "ok", "has_openai_key": settings.has_openai_key}
+    return {
+        "status": "ok",
+        "has_openai_key": settings.has_openai_key,
+        "has_hf_token": settings.has_hf_token,
+    }
 
 
 # ── 1) 초록 직접 입력 → 요약 ──
@@ -109,14 +124,24 @@ def summarize(req: SummarizeRequest, db: Session = Depends(get_db)):
     except AIServiceError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
+    # 생의학 개체 추출 (실패해도 요약은 반환)
+    entities = extract_entities(abstract)
+
     paper = _save_paper(
         db,
         title=req.title or "제목 없음",
         abstract=abstract,
         summary=summary,
+        entities=entities,
     )
 
-    return SummarizeResponse(summary=summary, paper_id=paper.id, used_mock=used_mock)
+    return SummarizeResponse(
+        summary=summary,
+        abstract=abstract,
+        entities=entities,
+        paper_id=paper.id,
+        used_mock=used_mock,
+    )
 
 
 # ── 2) PMID → PubMed 정보 조회 ──
@@ -152,18 +177,27 @@ def summarize_pubmed(pmid: str, db: Session = Depends(get_db)):
     except AIServiceError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
+    entities = extract_entities(article.abstract)
+
     paper = _save_paper(
         db,
         title=article.title,
         abstract=article.abstract,
         summary=summary,
+        entities=entities,
         pmid=article.pmid,
         authors=article.authors,
         journal=article.journal,
         pub_year=article.pub_year,
     )
 
-    return SummarizeResponse(summary=summary, paper_id=paper.id, used_mock=used_mock)
+    return SummarizeResponse(
+        summary=summary,
+        abstract=article.abstract,
+        entities=entities,
+        paper_id=paper.id,
+        used_mock=used_mock,
+    )
 
 
 # ── 4) 저장된 요약 목록 ──

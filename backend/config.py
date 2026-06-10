@@ -20,6 +20,10 @@ class Settings:
     NCBI_EMAIL: str = os.getenv("NCBI_EMAIL", "").strip()
     NCBI_API_KEY: str = os.getenv("NCBI_API_KEY", "").strip()
 
+    # HuggingFace 생의학 NER
+    HF_TOKEN: str = os.getenv("HF_TOKEN", "").strip()
+    HF_NER_MODEL: str = os.getenv("HF_NER_MODEL", "d4data/biomedical-ner-all").strip()
+
     # CORS
     CORS_ORIGINS: list[str] = [
         o.strip()
@@ -35,6 +39,10 @@ class Settings:
     @property
     def has_openai_key(self) -> bool:
         return bool(self.OPENAI_API_KEY)
+
+    @property
+    def has_hf_token(self) -> bool:
+        return bool(self.HF_TOKEN)
 
 
 settings = Settings()

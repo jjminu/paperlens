@@ -1,3 +1,5 @@
+import HighlightedAbstract from "./HighlightedAbstract.jsx";
+
 // AI 요약 결과를 항목별 카드로 보여준다.
 const SECTIONS = [
   { key: "background", label: "연구 배경", icon: "📚" },
@@ -10,7 +12,7 @@ const SECTIONS = [
   { key: "future_research", label: "후속 연구 아이디어", icon: "🚀" },
 ];
 
-export default function SummaryCard({ title, summary, usedMock }) {
+export default function SummaryCard({ title, summary, usedMock, abstract, entities }) {
   if (!summary) return null;
 
   return (
@@ -23,6 +25,12 @@ export default function SummaryCard({ title, summary, usedMock }) {
         <div className="alert alert-warn">
           ⚠️ OpenAI API 키가 없어 <b>예시(MOCK) 요약</b>이 표시됩니다. 실제 요약을
           보려면 <code>backend/.env</code> 에 <code>OPENAI_API_KEY</code> 를 설정하세요.
+        </div>
+      )}
+
+      {abstract && (
+        <div className="summary-section">
+          <HighlightedAbstract abstract={abstract} entities={entities} />
         </div>
       )}
 

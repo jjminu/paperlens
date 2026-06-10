@@ -24,6 +24,9 @@ class Paper(Base):
     # AI 요약 결과 (JSON 문자열로 저장)
     summary_json = Column(Text, nullable=False)
 
+    # 생의학 NER 개체 목록 (JSON 문자열로 저장)
+    entities_json = Column(Text, nullable=True)
+
     # 생성 날짜 (UTC)
     created_at = Column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False

@@ -33,6 +33,8 @@ export default function HomePage() {
         title: title.trim() || "제목 없음",
         summary: data.summary,
         used_mock: data.used_mock,
+        abstract: data.abstract,
+        entities: data.entities,
       });
     } catch (err) {
       setError(err.message);
@@ -61,6 +63,8 @@ export default function HomePage() {
         title: `PMID ${cleaned}`,
         summary: data.summary,
         used_mock: data.used_mock,
+        abstract: data.abstract,
+        entities: data.entities,
       });
     } catch (err) {
       setError(err.message);
@@ -164,6 +168,8 @@ export default function HomePage() {
           title={result.title}
           summary={result.summary}
           usedMock={result.used_mock}
+          abstract={result.abstract}
+          entities={result.entities}
         />
       )}
     </>

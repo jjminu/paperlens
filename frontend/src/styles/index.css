@@ -320,6 +320,71 @@ textarea:focus {
   padding: 40px 0;
 }
 
+/* ── 생의학 NER 하이라이트 ── */
+.ner-block h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ner-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.ner-text {
+  margin: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 2;
+  white-space: pre-wrap;
+  color: #374151;
+}
+.ent {
+  border-radius: 5px;
+  padding: 1px 4px;
+  font-weight: 600;
+  color: #1a2233;
+  cursor: help;
+}
+/* 그룹별 색상 (배경 + 범례 chip 공용) */
+.ent-gene,
+.chip.ent-gene {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+.ent-disease,
+.chip.ent-disease {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.ent-chemical,
+.chip.ent-chemical {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+.ent-anatomy,
+.chip.ent-anatomy {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.ent-species,
+.chip.ent-species {
+  background: #ffedd5;
+  color: #c2410c;
+}
+.ent-other,
+.chip.ent-other {
+  background: #e5e7eb;
+  color: #374151;
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: 16px;
