@@ -1,0 +1,22 @@
+# Render Blueprint — 백엔드(FastAPI) 자동 배포 설정
+# https://render.com → New → Blueprint 로 이 저장소를 연결하면 자동 인식됩니다.
+services:
+  - type: web
+    name: paperlens-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # 아래 값들은 Render 대시보드에서 직접 입력합니다 (sync:false = 비밀값).
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      # 프론트엔드(Vercel) 주소를 배포 후 여기에 넣어주세요.
+      # 예: https://paperlens.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
+      - key: NCBI_EMAIL
+        sync: false
