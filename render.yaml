@@ -9,6 +9,9 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
+      # 파이썬 버전 고정 (3.14에서는 pydantic-core 빌드가 실패하므로 3.12로 고정)
+      - key: PYTHON_VERSION
+        value: 3.12.4
       # 아래 값들은 Render 대시보드에서 직접 입력합니다 (sync:false = 비밀값).
       - key: OPENAI_API_KEY
         sync: false
